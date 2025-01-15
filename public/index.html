@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background: #4caf50;
+            color: white;
+            margin: 0;
+            position: relative;
+        }
+        .nav-buttons {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .nav-buttons a {
+            text-decoration: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: white;
+            background: #2196f3;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+        .nav-buttons a:hover {
+            background: #1976d2;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .coin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .coin:last-child {
+            border-bottom: none;
+        }
+        .coin h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .coin p {
+            margin: 5px 0;
+        }
+        .btn-alert {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: white;
+            background: #ff5722;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-alert:hover {
+            background: #e64a19;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        Real-Time Cryptocurrency Tracker
+        <div class="nav-buttons">
+            <a href="/api/v1/users/register">Register</a>
+            <a href="/api/v1/users/login">Login</a>
+        </div>
+    </h1>
+    <div class="container" id="cryptoContainer">
+        <!-- Coins will be dynamically added here -->
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const container = document.getElementById('cryptoContainer');
+        const alerts = {}; // Store alert thresholds for each coin
+
+        // Listen for real-time price updates
+        socket.on('priceUpdate', (data) => {
+            const { s: symbol, p: price, q: quantity } = data; // Extract data
+            const priceFloat = parseFloat(price).toFixed(2);
+            const quantityFloat = parseFloat(quantity).toFixed(2);
+
+            // Check if the coin is already displayed
+            let coinDiv = document.getElementById(symbol);
+            if (!coinDiv) {
+                // Create a new coin entry
+                coinDiv = document.createElement('div');
+                coinDiv.classList.add('coin');
+                coinDiv.id = symbol;
+                coinDiv.innerHTML = `
+                    <div>
+                        <h3>${symbol}</h3>
+                        <p>Price: $<span class="price">${priceFloat}</span></p>
+                        <p>Quantity: ${quantityFloat}</p>
+                    </div>
+                    <button class="btn-alert" onclick="setAlert('${symbol}')">Set Alert</button>
+                `;
+                container.appendChild(coinDiv);
+            } else {
+                // Update the existing coin entry
+                const priceSpan = coinDiv.querySelector('.price');
+                priceSpan.textContent = priceFloat;
+            }
+
+            // Check if an alert threshold is set and notify if exceeded
+            if (alerts[symbol] && priceFloat >= alerts[symbol]) {
+                alert(`🚨 Alert! ${symbol} price reached $${priceFloat}`);
+                delete alerts[symbol]; // Clear the alert once triggered
+            }
+        });
+
+        // Set an alert for a specific coin
+        function setAlert(symbol) {
+            const threshold = prompt(`Set an alert for ${symbol} when the price exceeds:`);
+            if (threshold && !isNaN(threshold)) {
+                alerts[symbol] = parseFloat(threshold);
+                alert(`Alert set for ${symbol} at $${threshold}`);
+            } else {
+                alert('Invalid threshold value.');
+            }
+        }
+    </script>
+</body>
+</html>

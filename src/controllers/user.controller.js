@@ -18,11 +18,13 @@ const registerUser = asyncHandler(async(req,res)=>{
     if(existingUser) throw new apiError(409,"User already exist")
     const user = new User({username,email,password});
     await user.save();
-    return res
-            .status(201)
-            .json(
-                new apiResponse(200,user,"user created successfully")
-            )
+
+    res.redirect("/");
+    // return res
+    //         .status(201)
+    //         .json(
+    //             new apiResponse(200,user,"user created successfully")
+    //         )
 })
 
 const loginUser = asyncHandler(async(req,res)=>{
@@ -30,16 +32,18 @@ const loginUser = asyncHandler(async(req,res)=>{
     if([username,password].some((field)=>field.trim()===""))
         {
             throw new apiError(400,"All field are required")
-            }
+        }
             const user = await User.findOne({username});
             if(!user) throw new apiError(401,"Invalid username or password");
             const isValidPassword = await user.isPasswordCorrect(password);
             if(!isValidPassword) throw new apiError(401,"Invalid username or password");
-            return res
-            .status(200)
-            .json(
-                new apiResponse(200,"User logged successful")
-                )
+
+            res.redirect("/");
+            // return res
+            // .status(200)
+            // .json(
+            //     new apiResponse(200,"User logged successful")
+            //     )
 })
 
 const forgotPassword = asyncHandler(async (req, res) => {

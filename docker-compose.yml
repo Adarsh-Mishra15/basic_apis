@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  app:
+    image: mishraji1591/basic-apis:latest  # The image for your app
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - PORT=${PORT}
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+    depends_on:
+      - db
+
+  db:
+    image: mishraji1591/my-mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
