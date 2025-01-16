@@ -128,9 +128,31 @@
             // Check if an alert threshold is set and notify if exceeded
             if (alerts[symbol] && priceFloat >= alerts[symbol]) {
                 alert(`🚨 Alert! ${symbol} price reached $${priceFloat}`);
+                // Call the backend API to send an email
+                fetch("/api/v1/email/send-alert", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        to: "24mt0022@iitism.ac.in",
+                        subject: "Price Alert: Time to Buy/Sell!",
+                        text: `Your coin: ${symbol} has reached your expected price: $${priceFloat}.`,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            console.log("Email sent successfully!");
+                        } else {
+                            console.error("Failed to send email:", data.message);
+                        }
+                    })
+                    .catch((error) => console.error("Error sending email:", error));
+
                 delete alerts[symbol]; // Clear the alert once triggered
             }
-        });
+        })
 
         // Set an alert for a specific coin
         function setAlert(symbol) {
@@ -142,6 +164,7 @@
                 alert('Invalid threshold value.');
             }
         }
+
     </script>
 </body>
 </html>

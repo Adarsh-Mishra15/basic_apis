@@ -5,6 +5,7 @@ import { apiResponse } from "../utils/apiResponse.js";
 import crypto from "crypto"
 import { sendEmail } from "../utils/sendEmail.js";
 
+// Register User functionality
 const registerUser = asyncHandler(async(req,res)=>{
     const {username,email,password} = req.body;
 
