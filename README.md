@@ -30,4 +30,4 @@ A simple and powerful application for tracking real-time cryptocurrency prices. 
    cd basic_apis
 ### Docker Image
     ```bash
-    docker pull mishraji1591/crypto-app
+    docker image: docker pull mishraji1591/crypto-app
