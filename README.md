@@ -29,5 +29,6 @@ A simple and powerful application for tracking real-time cryptocurrency prices. 
    git clone https://github.com/Adarsh-Mishra15/basic_apis.git
    cd basic_apis
 ### Docker Image
+2. Docker Image:
     ```bash
-    docker image: docker pull mishraji1591/crypto-app
+    docker pull mishraji1591/crypto-app
